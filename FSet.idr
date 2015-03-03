@@ -1,4 +1,5 @@
 import Elem
+import Representative
 
 data TVect : List Type -> Type where
   NilTVect : TVect []
@@ -57,6 +58,9 @@ exampleOneOf1 = ThisOne Here True
 exampleOneOf2 : OneOf [(), Int, Bool]
 exampleOneOf2 = ThisOne (There (There Here)) True
 
+exampleOneOf3 : OneOf [(), Int, (), Bool]
+exampleOneOf3 = ThisOne (There (There (There Here))) True
+
 handleOrdered : FVect ts r -> OneOf ts -> r
 handleOrdered fvect (ThisOne el x) = findFVect' el fvect $ x
 
@@ -68,3 +72,12 @@ handle fvect oneOf {pe} = handleUnordered fvect oneOf pe
 
 doesItWork : Int
 doesItWork = handle exampleFVect exampleOneOf2
+
+handleWeakRepresentative : FVect ts r -> OneOf ss -> WeakRepresentative ts ss -> r
+handleWeakRepresentative fvect (ThisOne el x) weakRep = findFVect' (weakRepElemTheorem weakRep el) fvect $ x
+
+handleWR : FVect ts r -> OneOf ss -> {auto wr : WeakRepresentative ts ss} -> r
+handleWR fvect oneOf {wr} = handleWeakRepresentative fvect oneOf wr
+
+doesItWork' : Int
+doesItWork' = handleWR exampleFVect exampleOneOf3
