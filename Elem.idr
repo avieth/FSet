@@ -15,11 +15,15 @@ elemConsLemma : Elem t ss -> Elem t (s :: ss)
 elemConsLemma Here = There Here
 elemConsLemma (There x) = There (There x)
 
-elemAppendLemma : Elem t ts -> Append rs ts ss -> Elem t ss
-elemAppendLemma Here EmptyAppend = Here
-elemAppendLemma (There x) EmptyAppend = There x
-elemAppendLemma Here (NonEmptyAppend x) = There (elemAppendLemma Here x)
-elemAppendLemma (There x) (NonEmptyAppend y) = There (elemAppendLemma (There x) y)
+elemAppendLemmaRight : Elem t ts -> Append rs ts ss -> Elem t ss
+elemAppendLemmaRight Here EmptyAppend = Here
+elemAppendLemmaRight (There x) EmptyAppend = There x
+elemAppendLemmaRight Here (NonEmptyAppend x) = There (elemAppendLemmaRight Here x)
+elemAppendLemmaRight (There x) (NonEmptyAppend y) = There (elemAppendLemmaRight (There x) y)
+
+elemAppendLemmaLeft : Elem t ts -> Append ts rs ss -> Elem t ss
+elemAppendLemmaLeft Here (NonEmptyAppend app) = Here
+elemAppendLemmaLeft (There x) (NonEmptyAppend app) = There (elemAppendLemmaLeft x app)
 
 ||| Ins x xs ys means ys is obtained from xs by inserting x somewhere (in ys).
 data Ins : t -> List t -> List t -> Type where
