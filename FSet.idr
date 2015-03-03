@@ -52,6 +52,9 @@ exampleFVect = ConsFVect ifBool (ConsFVect ifUnit (ConsFVect ifInt NilFVect))
 data OneOf : List Type -> Type where
   ThisOne : Elem t ts -> t -> OneOf ts
 
+oneOfAppendLemma : OneOf ts -> Append rs ts ss -> OneOf ss
+oneOfAppendLemma (ThisOne elem x) app = ThisOne (elemAppendLemma elem app) x
+
 exampleOneOf1 : OneOf [Bool, (), Int]
 exampleOneOf1 = ThisOne Here True
 

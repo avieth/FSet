@@ -5,6 +5,22 @@ data Elem : Type -> List Type -> Type where
   Here : Elem t (t :: ts)
   There : Elem t ts -> Elem t (r :: ts)
 
+||| Third list is the concatenation of the first list infront of the second
+||| list.
+data Append : List ts -> List rs -> List ss -> Type where
+  EmptyAppend : Append [] rs rs
+  NonEmptyAppend : Append ts rs ss -> Append (t :: ts) rs (t :: ss)
+
+elemConsLemma : Elem t ss -> Elem t (s :: ss)
+elemConsLemma Here = There Here
+elemConsLemma (There x) = There (There x)
+
+elemAppendLemma : Elem t ts -> Append rs ts ss -> Elem t ss
+elemAppendLemma Here EmptyAppend = Here
+elemAppendLemma (There x) EmptyAppend = There x
+elemAppendLemma Here (NonEmptyAppend x) = There (elemAppendLemma Here x)
+elemAppendLemma (There x) (NonEmptyAppend y) = There (elemAppendLemma (There x) y)
+
 ||| Ins x xs ys means ys is obtained from xs by inserting x somewhere (in ys).
 data Ins : t -> List t -> List t -> Type where
   InsHead : Ins t ts (t :: ts)
@@ -41,10 +57,6 @@ lemma3 (InsTail ins) (There elem) = There (lemma3 ins elem)
 --   proof, nor the end of the Ins proof. ins and elem are each proofs about
 --   the tail of xs, so throwing a There in front of the recursive call is
 --   just what we need.
-
-lemma4 : Elem t ss -> Elem t (s :: ss)
-lemma4 Here = There Here
-lemma4 (There x) = There (There x)
 
 data Perm : List t -> List t -> Type where
   PNil : Perm [] []
